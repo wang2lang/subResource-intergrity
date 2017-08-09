@@ -1,0 +1,28 @@
+{
+  "name": "sub-source",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && webpack --config webpack.config.js",
+    "build:sri": "rm -rf dist && webpack --config webpack.sri.config.js",
+    "build:pre": "rm -rf dist && webpack --config webpack.pre.config.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^2.30.0",
+    "rimraf": "^2.6.1",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.4.1",
+    "webpack-subresource-integrity": "^1.0.1"
+  },
+  "dependencies": {
+    "js-cookie": "^2.1.4",
+    "moment": "^2.18.1",
+    "vue": "^2.4.2"
+  }
+}

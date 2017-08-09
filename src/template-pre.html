@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    var CDN_URI = '//cdnjs.com/'
+    var styles = {}
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+      styles["<%= htmlWebpackPlugin.files.css[css] %>"] = "<%= htmlWebpackPlugin.files.cssIntegrity[css] %>"
+    <% } %>
+ 
+    var chunks = {}
+    <% for (var chunk in htmlWebpackPlugin.files.js) { %>
+      chunks["<%= htmlWebpackPlugin.files.js[chunk] %>"] = "<%= htmlWebpackPlugin.files.jsIntegrity[chunk] %>"
+    <% } %>
+
+    Object.keys(styles).forEach(key => {
+      _loadStyle(CDN_URI + key, styles[key])
+        .catch(function () {
+          return _loadStyle(key, styles[key])
+        })
+    })
+  
+    var preloadUrls = Object.keys(chunks).map(key => _wrapPreload(key))
+
+    Promise.all(preloadUrls).then(urls => {
+      urls.forEach(function(url) {
+        _loadScript(url)
+      })
+    })
+
+    function _wrapPreload(key) {
+      return _preLoad(CDN_URI + key, chunks[key])
+        .catch(link => {
+          link.href = key
+          return key
+        })
+    }
+
+    function _loadScript(src) {
+      var script = document.createElement('script')
+      script.src = src
+      script.async = false
+      document.querySelector('head').appendChild(script)
+    }
+
+    function _loadStyle(href, intergrity) {
+      return new Promise((resolve, reject) => {
+        var link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.crossoirgin = 'anonymous'
+        link.onload = resolve
+        link.onerror = reject
+        if (intergrity) {
+          link.href = href
+          link.intergrity = intergrity
+        }
+        document.querySelector('head').appendChild(link)
+      })
+    }
+
+    function _preLoad(href, intergrity) {
+      return new Promise(function (resolve, reject) {
+        var link = document.createElement('link')
+        link.href = href
+        link.rel = 'preload'
+        link.as = 'script'
+        link.onload = resolve.bind(undefined, href)
+        link.onerror = reject.bind(undefined, link)
+        if (intergrity) {
+          link.setAttribute('intergrity', intergrity)
+          link.setAttribute('crossoirgin', 'anoymous')
+        }
+        document.querySelector('head').appendChild(link)
+      })
+    }
+  </script>
+</body>
+
+</html>
